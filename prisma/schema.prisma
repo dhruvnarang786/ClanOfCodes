@@ -1,0 +1,122 @@
+// Prisma Schema for Distributed Code Compiler & Judge
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum Role {
+  STUDENT
+  PROFESSOR
+}
+
+enum Difficulty {
+  EASY
+  MEDIUM
+  HARD
+}
+
+enum Language {
+  CPP
+}
+
+enum SubmissionStatus {
+  PENDING
+  JUDGING
+  COMPLETED
+  FAILED
+}
+
+enum Verdict {
+  ACCEPTED
+  WRONG_ANSWER
+  COMPILATION_ERROR
+  RUNTIME_ERROR
+  TIME_LIMIT_EXCEEDED
+  MEMORY_LIMIT_EXCEEDED
+  SYSTEM_ERROR
+}
+
+model User {
+  id           String       @id @default(cuid())
+  email        String       @unique
+  passwordHash String
+  name         String
+  role         Role         @default(STUDENT)
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
+
+  createdProblems Problem[]    @relation("CreatedProblems")
+  submissions     Submission[]
+  compilerHistory CompilerHistory[]
+}
+
+model Problem {
+  id            String       @id @default(cuid())
+  title         String
+  slug          String       @unique // @unique automatically builds an index; no extra @@index needed
+  description   String
+  difficulty    Difficulty   @default(EASY)
+  timeLimitMs   Int          @default(2000)
+  memoryLimitMb Int          @default(256)
+  creatorId     String
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+
+  creator     User         @relation("CreatedProblems", fields: [creatorId], references: [id])
+  testCases   TestCase[]
+  submissions Submission[]
+}
+
+model TestCase {
+  id             String   @id @default(cuid())
+  problemId      String
+  input          String
+  expectedOutput String
+  isHidden       Boolean  @default(true)
+  createdAt      DateTime @default(now())
+
+  problem Problem @relation(fields: [problemId], references: [id], onDelete: Cascade)
+
+  @@index([problemId])
+}
+
+model Submission {
+  id              String           @id @default(cuid())
+  userId          String
+  problemId       String
+  code            String
+  language        Language         @default(CPP)
+  status          SubmissionStatus @default(PENDING)
+  verdict         Verdict?
+  executionTimeMs Int?
+  memoryUsedMb    Float?
+  compileError    String?
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  problem Problem @relation(fields: [problemId], references: [id], onDelete: Cascade)
+  @@index([problemId, createdAt])
+}
+
+model CompilerHistory {
+  id              String   @id @default(cuid())
+  userId          String
+  code            String
+  language        Language @default(CPP)
+  stdin           String
+  stdout          String
+  stderr          String
+  compileError    String?
+  verdict         String
+  executionTimeMs Int?
+  createdAt       DateTime @default(now())
+
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, createdAt])
+}

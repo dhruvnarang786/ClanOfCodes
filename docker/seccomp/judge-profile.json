@@ -1,0 +1,92 @@
+{
+  "defaultAction": "SCMP_ACT_ALLOW",
+  "architectures": ["SCMP_ARCH_X86_64", "SCMP_ARCH_X86", "SCMP_ARCH_X32"],
+  "syscalls": [
+    {
+      "comment": "DENY: network sockets - belt-and-suspenders with --network=none. Blocks AF_INET(2), AF_INET6(10), AF_NETLINK(16), AF_PACKET(17).",
+      "names": ["socket"],
+      "action": "SCMP_ACT_ERRNO",
+      "args": [{"index": 0, "value": 2, "op": "SCMP_CMP_GE"}]
+    },
+    {
+      "comment": "DENY: network connect/bind/listen",
+      "names": ["connect", "bind", "listen", "accept", "accept4"],
+      "action": "SCMP_ACT_ERRNO"
+    },
+    {
+      "comment": "DENY: ptrace - prevents process inspection and many kernel exploits",
+      "names": ["ptrace"],
+      "action": "SCMP_ACT_ERRNO"
+    },
+    {
+      "comment": "DENY: mount/unmount - prevents filesystem manipulation",
+      "names": ["mount", "umount", "umount2"],
+      "action": "SCMP_ACT_ERRNO"
+    },
+    {
+      "comment": "DENY: kernel module loading",
+      "names": ["init_module", "delete_module", "finit_module"],
+      "action": "SCMP_ACT_ERRNO"
+    },
+    {
+      "comment": "DENY: kexec - load a new kernel",
+      "names": ["kexec_load", "kexec_file_load"],
+      "action": "SCMP_ACT_ERRNO"
+    },
+    {
+      "comment": "DENY: keyctl - kernel keyring manipulation",
+      "names": ["keyctl", "add_key", "request_key"],
+      "action": "SCMP_ACT_ERRNO"
+    },
+    {
+      "comment": "DENY: bpf - extended Berkeley Packet Filter (kernel exploit surface)",
+      "names": ["bpf"],
+      "action": "SCMP_ACT_ERRNO"
+    },
+    {
+      "comment": "DENY: perf_event_open - side-channel attack surface",
+      "names": ["perf_event_open"],
+      "action": "SCMP_ACT_ERRNO"
+    },
+    {
+      "comment": "DENY: namespace creation/switching - prevents container escape",
+      "names": ["unshare", "setns"],
+      "action": "SCMP_ACT_ERRNO"
+    },
+    {
+      "comment": "DENY: pivot_root/chroot - filesystem root changes",
+      "names": ["pivot_root", "chroot"],
+      "action": "SCMP_ACT_ERRNO"
+    },
+    {
+      "comment": "DENY: raw I/O port access",
+      "names": ["iopl", "ioperm"],
+      "action": "SCMP_ACT_ERRNO"
+    },
+    {
+      "comment": "DENY: swap manipulation",
+      "names": ["swapon", "swapoff"],
+      "action": "SCMP_ACT_ERRNO"
+    },
+    {
+      "comment": "DENY: syslog - kernel log access",
+      "names": ["syslog"],
+      "action": "SCMP_ACT_ERRNO"
+    },
+    {
+      "comment": "DENY: acct - process accounting (can write to host files)",
+      "names": ["acct"],
+      "action": "SCMP_ACT_ERRNO"
+    },
+    {
+      "comment": "DENY: clock_settime - prevent changing host clock",
+      "names": ["clock_settime", "clock_settime64", "settimeofday", "adjtimex", "clock_adjtime", "clock_adjtime64"],
+      "action": "SCMP_ACT_ERRNO"
+    },
+    {
+      "comment": "DENY: mknod - prevent device file creation",
+      "names": ["mknod", "mknodat"],
+      "action": "SCMP_ACT_ERRNO"
+    }
+  ]
+}
