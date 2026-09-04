@@ -1,8 +1,11 @@
-// ─── Docker Executor Types ───────────────────────────────────────────
+// ─── Executor Types ──────────────────────────────────────────────────
 //
-// These types define the input and output contract for the DockerExecutor.
+// These types define the input and output contract for the ProcessExecutor.
 // They are intentionally decoupled from the Prisma schema so the executor
 // can be tested standalone without a database connection.
+
+// ─── Supported Languages ─────────────────────────────────────────────
+export type Language = "CPP" | "PYTHON";
 
 // ─── Execution Verdicts ──────────────────────────────────────────────
 // These map 1:1 to the Prisma Verdict enum but are defined separately
@@ -14,13 +17,13 @@ export type ExecutionVerdict =
   | "RUNTIME_ERROR"         // Program crashed (segfault, exception, non-zero exit code)
   | "TIME_LIMIT_EXCEEDED"   // Execution exceeded the allowed time
   | "MEMORY_LIMIT_EXCEEDED" // Execution exceeded the allowed memory (OOM killed)
-  | "SYSTEM_ERROR";         // Docker/infrastructure failure (not the student's fault)
+  | "SYSTEM_ERROR";         // Infrastructure failure (not the student's fault)
 
 // ─── Execution Request ───────────────────────────────────────────────
 // Everything the executor needs to compile and run a single submission.
 
 export interface ExecutionRequest {
-  /** The C++ source code to compile and run */
+  /** The source code to compile/run */
   sourceCode: string;
 
   /** The stdin input to feed to the running program */
@@ -31,6 +34,9 @@ export interface ExecutionRequest {
 
   /** Maximum memory in megabytes */
   memoryLimitMb: number;
+
+  /** Programming language — defaults to CPP if omitted */
+  language?: Language | string;
 }
 
 // ─── Execution Result ────────────────────────────────────────────────

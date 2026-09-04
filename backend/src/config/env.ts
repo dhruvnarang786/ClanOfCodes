@@ -25,7 +25,4 @@ export const config = {
   jwtSecret: process.env.JWT_SECRET!,
   jwtExpiresIn: "7d",
   bcryptSaltRounds: 12,
-  jdoodleClientId: process.env.JDOODLE_CLIENT_ID || "",
-  jdoodleClientSecret: process.env.JDOODLE_CLIENT_SECRET || "",
-  executorType: (process.env.JDOODLE_CLIENT_ID ? "jdoodle" : "docker") as "jdoodle" | "docker",
 };

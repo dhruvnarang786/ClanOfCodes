@@ -1,16 +1,15 @@
-import { config } from "../config/env";
+// ─── Executor Entry Point ─────────────────────────────────────────────
+//
+// All code execution is routed through the ProcessExecutor.
+// Code is compiled and run DIRECTLY inside this container using
+// g++ (C++) and python3 (Python). No Docker daemon is required.
+
 import type { ExecutionRequest, ExecutionResult } from "./types";
-import { executeCode as dockerExecute } from "./dockerExecutor";
-import { executeCode as jdoodleExecute } from "./jdoodleExecutor";
+import { executeCode as processExecute } from "./processExecutor";
 
 export async function executeCode(request: ExecutionRequest): Promise<ExecutionResult> {
-  if (config.executorType === "jdoodle") {
-    console.log("[Executor] Routing request to JDoodle API");
-    return jdoodleExecute(request);
-  } else {
-    console.log("[Executor] Routing request to local Docker sandbox");
-    return dockerExecute(request);
-  }
+  console.log(`[Executor] Routing to ProcessExecutor (lang=${request.language ?? "CPP"})`);
+  return processExecute(request);
 }
 
 export * from "./types";
