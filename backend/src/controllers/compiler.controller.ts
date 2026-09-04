@@ -14,7 +14,7 @@
 // limits as the problem judging flow.
 
 import { Request, Response } from "express";
-import { executeCode } from "../executor/dockerExecutor";
+import { executeCode } from "../executor";
 import { ApiResponse } from "../utils/ApiResponse";
 import { prisma } from "../lib/prisma";
 

@@ -10,7 +10,7 @@
 //   - compilerjudge-compiler image must be built
 //     (docker build -t compilerjudge-compiler -f docker/compiler/Dockerfile .)
 
-import { executeCode } from "./dockerExecutor";
+import { executeCode } from "./index";
 import type { ExecutionRequest, ExecutionResult } from "./types";
 
 // ─── Test Helpers ────────────────────────────────────────────────────

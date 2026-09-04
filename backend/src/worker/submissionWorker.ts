@@ -34,7 +34,7 @@
 import { Worker, Job } from "bullmq";
 import { redisConnection } from "../queue/connection";
 import { prisma } from "../lib/prisma";
-import { executeCode } from "../executor/dockerExecutor";
+import { executeCode } from "../executor";
 import type { ExecutionResult } from "../executor/types";
 
 // ─── Job Payload Type ────────────────────────────────────────────────

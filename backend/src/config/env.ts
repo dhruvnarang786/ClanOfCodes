@@ -25,4 +25,7 @@ export const config = {
   jwtSecret: process.env.JWT_SECRET!,
   jwtExpiresIn: "7d",
   bcryptSaltRounds: 12,
+  judge0ApiUrl: process.env.JUDGE0_API_URL || "https://judge0-ce.p.rapidapi.com",
+  judge0ApiKey: process.env.JUDGE0_API_KEY || "",
+  executorType: (process.env.JUDGE0_API_KEY ? "judge0" : "docker") as "judge0" | "docker",
 };
