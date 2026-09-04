@@ -247,7 +247,12 @@ export default function ProblemDetails() {
 
         const tcRes = await api.get(`/problems/${p.id}/testcases`);
         const allTc: TestCase[] = tcRes.data.data.testCases ?? [];
-        setSampleTestCases(allTc.filter((tc) => !tc.isHidden));
+        const visibleTcs = allTc.filter((tc) => !tc.isHidden);
+        setSampleTestCases(visibleTcs);
+        
+        if (visibleTcs.length > 0) {
+          setStdin(visibleTcs[0].input);
+        }
       } catch (err: any) {
         setProblemError(err.response?.data?.message || "Failed to load problem.");
       } finally {
