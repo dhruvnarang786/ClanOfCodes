@@ -239,7 +239,7 @@ async function processSubmission(job: Job<SubmissionJobData>): Promise<void> {
 // `concurrency: 1` because each job spawns a Docker container which is
 // resource-heavy. Scale by running multiple worker processes instead.
 
-const worker = new Worker("submission-judging", processSubmission, {
+export const worker = new Worker("submission-judging", processSubmission, {
   connection: redisConnection,
   concurrency: 1,
 });
@@ -283,19 +283,10 @@ worker.on("error", (error: Error) => {
 //
 // This prevents data corruption from half-processed submissions.
 
-async function gracefulShutdown(signal: string) {
-  console.log(`\n[Worker] ${signal} received. Shutting down gracefully...`);
+export async function gracefulWorkerShutdown() {
+  console.log(`\n[Worker] Shutting down gracefully...`);
   console.log("[Worker] Waiting for active jobs to complete...");
 
   await worker.close();
   console.log("[Worker] Worker closed.");
-
-  await prisma.$disconnect();
-  console.log("[Worker] Prisma disconnected.");
-
-  console.log("[Worker] Shutdown complete.");
-  process.exit(0);
 }
-
-process.on("SIGTERM", () => gracefulShutdown("SIGTERM"));
-process.on("SIGINT", () => gracefulShutdown("SIGINT"));

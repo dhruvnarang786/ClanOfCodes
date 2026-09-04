@@ -9,6 +9,7 @@ import { config } from "./config/env";
 import app from "./app";
 import { prisma } from "./lib/prisma";
 import { closeQueue } from "./queue/submissionQueue";
+import { gracefulWorkerShutdown } from "./worker/submissionWorker";
 
 const server = app.listen(config.port, () => {
   console.log(`
@@ -58,7 +59,10 @@ async function gracefulShutdown(signal: string) {
   await closeQueue();
   console.log("[Server] BullMQ queue closed.");
 
-  // 3. Close Prisma (database connection)
+  // 3. Stop the worker cleanly
+  await gracefulWorkerShutdown();
+
+  // 4. Close Prisma (database connection)
   await prisma.$disconnect();
   console.log("[Server] Prisma disconnected.");
 
